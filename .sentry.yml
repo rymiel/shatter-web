@@ -1,0 +1,2 @@
+build: 'crystal build ./wsp/wsp.cr -o bin/shatter-wsp'
+run: 'bin/shatter-wsp'
