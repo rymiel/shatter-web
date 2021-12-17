@@ -96,7 +96,7 @@ module Shatter
             "id"    => profile.id,
             "r"     => shatter_token,
             "roles" => user.role_array.to_a,
-            "vers"  => Packet::Protocol::PROTOCOL_NAMES.keys
+            "vers"  => Packet::Protocol::PROTOCOL_NAMES.keys,
           }})
           logged_send({"servers" => servers.map { |s| [s.host, s.port] }})
           servers.each do |s|
@@ -132,15 +132,15 @@ module Shatter
               logged_send({"su" => {
                 "knownu" => DB::User.query.map do |i|
                   {
-                    "id"    => i.id,
-                    "name" => i.last_known_name,
-                    "roles" => i.role_array.to_a,
+                    "id"      => i.id,
+                    "name"    => i.last_known_name,
+                    "roles"   => i.role_array.to_a,
                     "servers" => i.servers.map do |s|
                       {
-                        "id" => s.id,
-                        "srv" => {s.host, s.port}
+                        "id"  => s.id,
+                        "srv" => {s.host, s.port},
                       }
-                    end
+                    end,
                   }
                 end,
               }})

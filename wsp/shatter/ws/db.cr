@@ -43,8 +43,8 @@ module Shatter::WS::DB
 
     def role_array : Bool[3]
       StaticArray[roles.tester?,
-       roles.superuser?,
-       roles.alter_list?]
+        roles.superuser?,
+        roles.alter_list?]
     end
   end
 
