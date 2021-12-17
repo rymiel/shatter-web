@@ -4,6 +4,7 @@ export namespace Outgoing {
     port: number;
     listening: string[];
     proxied: string[];
+    protocol: string;
   }
 
   interface TokenFrame {

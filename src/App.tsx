@@ -28,6 +28,7 @@ interface AppState {
   ws?: WebSocket;
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
+  protocols?: string[];
 }
 
 const WELCOME_STYLE: CSSProperties = {
@@ -123,7 +124,7 @@ export default class App extends Component<Record<string, never>, AppState> {
     } else if ("ready" in json) {
       let frame = json.ready as Incoming.ReadyFrame;
       if (frame.r) localStorage.setItem("r", frame.r);
-      this.setState({stage: Stage.Joining, profile: frame});
+      this.setState({stage: Stage.Joining, profile: frame, protocols: frame.vers});
     } else if ("servers" in json) {
       let frame = json.servers as [string, number][];
       this.setState(s => {
@@ -163,12 +164,15 @@ export default class App extends Component<Record<string, never>, AppState> {
     }
   }
 
-  connect(host: string, port: number) {
+  connect(protocol: string, host: string, port: number) {
+    const protocols = this.state.protocols;
+    if (!protocols) return;
     this.send({
       host,
       listening: [],
       port,
-      proxied: ["Chat", "Disconnect", "PlayInfo"]
+      proxied: ["Chat", "Disconnect", "PlayInfo"],
+      protocol: (protocols.includes(protocol) ? protocol : protocols[0])
     });
     this.setState({stage: Stage.Connecting});
   }

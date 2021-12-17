@@ -33,6 +33,7 @@ export interface UserServerList {
 export namespace Incoming {
   export interface ReadyFrame extends KnownUser {
     r?: string;
+    vers: string[]
   }
 
   export interface ConnectionList {

@@ -40,7 +40,9 @@ const LIST_DESC_STYLE: CSSProperties = {
 const LIST_CONNECT_STYLE: CSSProperties = {
   ...LIST_ITEM_STYLE,
   marginLeft: "1em",
-  verticalAlign: "middle"
+  verticalAlign: "middle",
+  display: "flex",
+  flexDirection: "column",
 };
 
 export function srv(e: [string, number]): string {
@@ -70,14 +72,14 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
       <span>{props.name}</span>
       <div dangerouslySetInnerHTML={{__html: props.description}} />
     </div>
-    <ConnectButton style={LIST_CONNECT_STYLE} {...props} />
+    <ConnectButton style={LIST_CONNECT_STYLE} {...props} protocols={props.app.state.protocols!} />
   </ServerSection>;
 }
 
 function SimpleListedServer(props: ListedServerProps & InherentServerProps) {
   return <ServerSection>
     <span>{props.name}</span>
-    <ConnectButton style={{marginLeft: "1em"}} {...props} />
+    <ConnectButton style={{marginLeft: "1em"}} {...props} protocols={props.app.state.protocols!} />
   </ServerSection>;
 }
 

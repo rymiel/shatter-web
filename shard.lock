@@ -14,7 +14,7 @@ shards:
 
   clear:
     git: https://github.com/anykeyh/clear.git
-    version: 0.9+git.commit.dc5bcec0b5fa6871d479d487ab7cfc5e5b1ba16c
+    version: 0.9+git.commit.480289555c833793fa6964398fefec6b7e25168d
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
@@ -54,7 +54,7 @@ shards:
 
   shatter:
     git: https://gitlab.com/rymiel/shatter.git
-    version: 0.1.0+git.commit.6e7f409385e3e660e2900ad21d47cc40b43be95a
+    version: 0.1.1+git.commit.c164c6193915fb8c004cfd8cd0c624b4bdfcc30c
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git

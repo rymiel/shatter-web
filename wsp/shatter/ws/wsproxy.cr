@@ -15,7 +15,7 @@ module Shatter
       property listening : Array(PktId::Cb::Play)
       property proxied : Array(PktId::Cb::Play)
 
-      def initialize(@ip, @port, @listening, @proxied, ws_handler)
+      def initialize(@protocol, @ip, @port, @listening, @proxied, ws_handler)
         @registry = ws_handler.registries[0]
         @block_states = ws_handler.registries[1]
         @minecraft_token = ws_handler.mc_token
@@ -24,7 +24,7 @@ module Shatter
         @id = ws_handler.id
       end
 
-      def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied)
+      def initialize(@protocol, @ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied)
       end
 
       private def logged_error(s)

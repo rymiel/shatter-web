@@ -10,7 +10,7 @@ module Shatter
     module Frame
       alias RefreshAuth = {token: String?, rtoken: UUID?}
       alias Auth = {token: String}
-      alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play)}
+      alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play), protocol: String}
     end
 
     class_getter active = [] of WS
@@ -91,11 +91,12 @@ module Shatter
             "id"    => profile.id,
             "r"     => shatter_token,
             "roles" => user.role_array.to_a,
+            "vers"  => Packet::Protocol::PROTOCOL_NAMES.keys
           }}.to_json)
           logged_send({"servers" => servers.map { |s| [s.host, s.port] }}.to_json)
           servers.each do |s|
             temp_proxy = WSProxy.new(
-              s.host, s.port, ([] of PktId::Cb::Play), ([] of PktId::Cb::Play), self
+              0u32, s.host, s.port, ([] of PktId::Cb::Play), ([] of PktId::Cb::Play), self
             )
             temp_proxy.ping
           end
@@ -151,6 +152,7 @@ module Shatter
               next
             end
             @con = WSProxy.new(
+              Packet::Protocol::PROTOCOL_NAMES[frame[:protocol]?]? || 0u32,
               frame[:host],
               frame[:port] || 25565,
               frame[:listening],

@@ -33,8 +33,8 @@ export default class ConnectForm extends Component<ConnectFormProps, ConnectForm
   handleSubmit(ev: React.KeyboardEvent<HTMLInputElement>) {
     if (ev.key === 'Enter') {
       ev.preventDefault();
-      if (this.state.host !== undefined && this.state.port !== undefined)
-        this.props.app.connect(this.state.host, this.state.port);
+      // if (this.state.host !== undefined && this.state.port !== undefined)
+      //   this.props.app.connect(this.state.host, this.state.port);
     }
   }
 
@@ -42,7 +42,7 @@ export default class ConnectForm extends Component<ConnectFormProps, ConnectForm
     return <Section style={{justifyContent: "center", display: "flex", marginBottom: "1em", width: "fitContent"}}>
       <InputGroup onKeyDown={this.handleSubmit} onChange={this.handleHostChange} placeholder="Host" />
       <InputGroup type="number" defaultValue="25565" size={5} onKeyDown={this.handleSubmit} onChange={this.handlePortChange} placeholder="Port" />
-      <ConnectButton app={this.props.app} host={[this.state.host, this.state.port]} />
+      <ConnectButton app={this.props.app} host={[this.state.host, this.state.port]} protocols={this.props.app.state.protocols!} />
     </Section>;
   }
 }
