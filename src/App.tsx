@@ -85,8 +85,10 @@ export default class App extends Component<Record<string, never>, AppState> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   decodeFrame(json: any) {
     if ("error" in json) {
+      if (json.errno === "ExpiredToken") location.reload();
       this.setState(s => ({
         errors: s.errors.concat({
+          name: json.errno,
           description: json.error,
           title: json.errortype ?? "Denied"
         })
@@ -113,6 +115,7 @@ export default class App extends Component<Record<string, never>, AppState> {
         const message = data.html as string;
         this.setState(s => ({
           errors: [...s.errors, {
+            name: "ForcedDisconnect",
             title: "Forced Disconnect",
             description: (<span dangerouslySetInnerHTML={{__html: message}} />)
           }]

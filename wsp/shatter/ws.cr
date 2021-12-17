@@ -1,5 +1,6 @@
 require "./ws/wsproxy"
 require "./ws/proxied"
+require "./ws/error"
 require "./ws/db"
 require "jwt"
 require "uuid"
@@ -29,8 +30,12 @@ module Shatter
     @email : String? = nil
 
     private def logged_send(s)
-      local_log s, trace: true, passthrough: true
-      @ws.send(s)
+      local_log s.to_s, trace: true, passthrough: true
+      @ws.send(s.to_json)
+    end
+
+    private def error(e : WSPError, *args)
+      logged_send({"error" => WSPError.message(e), "errno" => e.to_s})
     end
 
     def initialize(@ws, @id, @registries)
@@ -63,7 +68,7 @@ module Shatter
 
           if rframe[:token].nil?
             if !refreshed
-              logged_send({"error" => "Couldn't refresh"}.to_json)
+              logged_send error :expired_token
               @ws.close
               next
             end
@@ -75,8 +80,8 @@ module Shatter
           db_user = DB::User.find UUID.new(profile.id)
           if db_user.nil?
             local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
-            logged_send({"error" => "You are not whitelisted to access this service"}.to_json)
-            logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"}.to_json)
+            logged_send error :not_whitelisted
+            logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"})
             @ws.close
             next
           else
@@ -92,8 +97,8 @@ module Shatter
             "r"     => shatter_token,
             "roles" => user.role_array.to_a,
             "vers"  => Packet::Protocol::PROTOCOL_NAMES.keys
-          }}.to_json)
-          logged_send({"servers" => servers.map { |s| [s.host, s.port] }}.to_json)
+          }})
+          logged_send({"servers" => servers.map { |s| [s.host, s.port] }})
           servers.each do |s|
             temp_proxy = WSProxy.new(
               0u32, s.host, s.port, ([] of Packet::Cb::Play), ([] of Packet::Cb::Play), self
@@ -122,7 +127,7 @@ module Shatter
                     },
                   }
                 end,
-              }}.to_json)
+              }})
             elsif su == "knownu"
               logged_send({"su" => {
                 "knownu" => DB::User.query.map do |i|
@@ -138,7 +143,7 @@ module Shatter
                     end
                   }
                 end,
-              }}.to_json)
+              }})
             end
           elsif !@mc_token.nil? && @con.nil?
             frame = Frame::Connect.from_json raw_message
@@ -147,7 +152,7 @@ module Shatter
             allowed += user.allowed if user.roles.alter_list?
             unless user.roles.superuser? || allowed.includes? frame_server
               local_log "Dropping #{profile.name} because they tried to access #{frame_server}, but wasn't permitted"
-              logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
+              logged_send error :not_permitted
               @ws.close
               next
             end
@@ -176,7 +181,7 @@ module Shatter
         end
       rescue ex
         puts ex.inspect_with_backtrace
-        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}."}.to_json)
+        logged_send error :connection_closed, ex
         @ws.close
         raise ex
       end

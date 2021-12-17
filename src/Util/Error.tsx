@@ -1,6 +1,7 @@
 import { H2 } from "@blueprintjs/core";
 
 export interface ErrorProps {
+  name: string;
   title: string;
   description?: string | JSX.Element;
 }
@@ -13,7 +14,7 @@ const ERR_STYLE: React.CSSProperties = {
 
 export default function Error(props: ErrorProps) {
   return <div>
-    <H2 style={ERR_STYLE}>{props.title}</H2>
+    <H2 style={ERR_STYLE} title={props.name}>{props.title}</H2>
     <p style={ERR_STYLE}>{props.description}</p>
   </div>;
 }
