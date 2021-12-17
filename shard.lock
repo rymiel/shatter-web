@@ -54,7 +54,7 @@ shards:
 
   shatter:
     git: https://gitlab.com/rymiel/shatter.git
-    version: 0.1.2+git.commit.5fab7b94ad3af8f2ea4424851dc170e5a6a70f55
+    version: 0.1.2+git.commit.7cd458c843f91301fa17eeb6753ab701713123a4
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git
