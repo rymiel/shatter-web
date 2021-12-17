@@ -2,18 +2,18 @@ module Shatter
   class WS
     class WSProxy < Shatter::Connection
       AUTO_HANDLED_PACKETS = {
-        PktId::Cb::Login::CryptRequest,
-        PktId::Cb::Login::LoginSuccess,
-        PktId::Cb::Login::SetCompression,
-        PktId::Cb::Status::Response,
-        PktId::Cb::Play::KeepAlive,
-        PktId::Cb::Play::JoinGame,
+        Packet::Cb::Login::CryptRequest,
+        Packet::Cb::Login::LoginSuccess,
+        Packet::Cb::Login::SetCompression,
+        Packet::Cb::Status::Response,
+        Packet::Cb::Play::KeepAlive,
+        Packet::Cb::Play::JoinGame,
       }
 
       property ws : HTTP::WebSocket
       property id : UInt32
-      property listening : Array(PktId::Cb::Play)
-      property proxied : Array(PktId::Cb::Play)
+      property listening : Array(Packet::Cb::Play)
+      property proxied : Array(Packet::Cb::Play)
 
       def initialize(@protocol, @ip, @port, @listening, @proxied, ws_handler)
         @registry = ws_handler.registries[0]
@@ -67,8 +67,8 @@ module Shatter
         if AUTO_HANDLED_PACKETS.includes? packet_id
           # puts "Incoming auto-handled packet: #{@state}/#{packet_id} #{size} -> #{real_size}"
           # pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id) }
-          @ws.send({"keepalive" => @id}.to_json) if packet_id.is_a? PktId::Cb::Play && packet_id.keep_alive?
-          r = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          @ws.send({"keepalive" => @id}.to_json) if packet_id.is_a? Packet::Cb::Play && packet_id.keep_alive?
+          r = Packet::PACKET_HANDLERS[packet_id].call(pkt, self)
           r.run
           STDERR << connection_name if r.has_describe?
           r.describe
@@ -81,11 +81,11 @@ module Shatter
             "joingame" => r.world
           }.to_json) if r.is_a? Packet::Play::JoinGame
         elsif @proxied.includes? packet_id
-          raise "Unknown proxy capability" unless packet_id.is_a? PktId::Cb::Play
-          is_silent = PktId::SILENT[packet_id]?
+          raise "Unknown proxy capability" unless packet_id.is_a? Packet::Cb::Play
+          is_silent = Packet::SILENT[packet_id]?
           pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id, auto: false, silent: is_silent) }
           STDERR << connection_name
-          packet = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          packet = Packet::PACKET_HANDLERS[packet_id].call(pkt, self)
           packet.describe
           packet.run
           json_out = case packet

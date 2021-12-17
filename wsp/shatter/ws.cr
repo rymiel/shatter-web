@@ -10,7 +10,7 @@ module Shatter
     module Frame
       alias RefreshAuth = {token: String?, rtoken: UUID?}
       alias Auth = {token: String}
-      alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play), protocol: String}
+      alias Connect = {host: String, port: Int32?, listening: Array(Packet::Cb::Play), proxied: Array(Packet::Cb::Play), protocol: String}
     end
 
     class_getter active = [] of WS
@@ -96,7 +96,7 @@ module Shatter
           logged_send({"servers" => servers.map { |s| [s.host, s.port] }}.to_json)
           servers.each do |s|
             temp_proxy = WSProxy.new(
-              0u32, s.host, s.port, ([] of PktId::Cb::Play), ([] of PktId::Cb::Play), self
+              0u32, s.host, s.port, ([] of Packet::Cb::Play), ([] of Packet::Cb::Play), self
             )
             temp_proxy.ping
           end
@@ -168,7 +168,7 @@ module Shatter
               when "Chat"
                 structure = ChatProxy::SbStructure.from_json json["proxy"].to_json
                 local_log "Proxy chat: #{structure}"
-                con.packet(PktId::Sb::Play::Chat) { |pkt| ChatProxy.convert_sb structure, pkt }
+                con.packet(Packet::Sb::Play::Chat) { |pkt| ChatProxy.convert_sb structure, pkt }
               else raise "Unknown proxy capability"
               end
             end
