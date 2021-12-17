@@ -68,7 +68,7 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
   return <ServerSection style={{display: "flex"}}>
     <img style={{...LIST_ITEM_STYLE, marginRight: "1em"}}
       src={props.favicon} />
-    <div style={LIST_DESC_STYLE}>
+    <div style={{...LIST_DESC_STYLE, display: "inline"}}>
       <span>{props.name}</span>
       <div dangerouslySetInnerHTML={{__html: props.description}} />
     </div>
