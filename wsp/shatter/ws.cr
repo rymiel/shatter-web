@@ -35,7 +35,7 @@ module Shatter
     end
 
     private def error(e : WSPError, *args)
-      logged_send({"error" => WSPError.message(e), "errno" => e.to_s})
+      logged_send({"error" => WSPError.message(e, *args), "errno" => e.to_s})
     end
 
     def initialize(@ws, @id, @registries)
@@ -74,7 +74,13 @@ module Shatter
             end
           else
             frame = {token: rframe[:token].not_nil!}
-            @mc_token, @profile, shatter_token = wsp_auth frame unless refreshed
+            begin
+              @mc_token, @profile, shatter_token = wsp_auth frame unless refreshed
+            rescue ex : Shatter::MSA::MojangAuthError::GameNotOwnedError
+              logged_send error :no_ownership, @email
+              @ws.close
+              next
+            end
           end
 
           db_user = DB::User.find UUID.new(profile.id)
