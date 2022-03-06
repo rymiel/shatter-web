@@ -102,7 +102,7 @@ module Shatter
             "id"    => profile.id,
             "r"     => shatter_token,
             "roles" => user.role_array.to_a,
-            "vers"  => Packet::Protocol::PROTOCOL_NAMES.keys,
+            "vers"  => Packet::Protocol::PROTOCOL_NAMES,
           }})
           logged_send({"servers" => servers.map { |s| [s.host, s.port] }})
           servers.each do |s|

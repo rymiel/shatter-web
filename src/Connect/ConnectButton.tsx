@@ -7,6 +7,7 @@ export interface ConnectButtonProps {
   style?: React.CSSProperties;
   app: App;
   protocols: string[];
+  defaultProtocol?: string;
 }
 
 export function ConnectButton(props: ConnectButtonProps) {
@@ -22,6 +23,6 @@ export function ConnectButton(props: ConnectButtonProps) {
   };
   return <div style={props.style}>
     <Button text="Connect!" intent={Intent.SUCCESS} loading={connecting} onClick={onClick} />
-    <HTMLSelect options={["Version", ...props.protocols]} onChange={onChange} />
+    <HTMLSelect options={["Version", ...props.protocols]} defaultValue={props.defaultProtocol} onChange={onChange} />
   </div>;
 }

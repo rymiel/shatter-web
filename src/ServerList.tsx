@@ -12,6 +12,7 @@ export interface ListedServerProps {
   host: [string, number];
   favicon?: string;
   description?: string;
+  defaultVersion?: string;
 }
 export interface InherentServerProps {
   host: [string, number];
@@ -72,14 +73,14 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
       <span>{props.name}</span>
       <div dangerouslySetInnerHTML={{__html: props.description}} />
     </div>
-    <ConnectButton style={LIST_CONNECT_STYLE} {...props} protocols={props.app.state.protocols!} />
+    <ConnectButton style={LIST_CONNECT_STYLE} {...props} protocols={Object.keys(props.app.state.protocols!)} defaultProtocol={props.defaultVersion} />
   </ServerSection>;
 }
 
 function SimpleListedServer(props: ListedServerProps & InherentServerProps) {
   return <ServerSection>
     <span>{props.name}</span>
-    <ConnectButton style={{marginLeft: "1em"}} {...props} protocols={props.app.state.protocols!} />
+    <ConnectButton style={{marginLeft: "1em"}} {...props} protocols={Object.keys(props.app.state.protocols!)} />
   </ServerSection>;
 }
 

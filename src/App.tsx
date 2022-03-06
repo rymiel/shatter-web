@@ -28,7 +28,7 @@ interface AppState {
   ws?: WebSocket;
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
-  protocols?: string[];
+  protocols?: Record<string, number>;
 }
 
 const WELCOME_STYLE: CSSProperties = {
@@ -141,6 +141,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       const server = json.ping as [string, number];
       const favicon = json.data.favicon as string;
       const description = (json.description as string).replace("\n", "<br/>");
+      const protocolVersion = json.data.version.protocol as number;
 
       this.setState(s => {
         const servers = s.servers;
@@ -149,6 +150,10 @@ export default class App extends Component<Record<string, never>, AppState> {
 
         indexedServer.favicon = favicon;
         indexedServer.description = description;
+        const protocols = s.protocols;
+        if (protocols) {
+          indexedServer.defaultVersion = Object.keys(protocols).find(key => protocols[key] === protocolVersion);
+        }
         return {servers};
       });
     } else if ("su" in json) {
@@ -175,7 +180,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       listening: [],
       port,
       proxied: ["Chat", "Disconnect", "PlayInfo"],
-      protocol: (protocols.includes(protocol) ? protocol : protocols[0])
+      protocol: ((protocol in protocols) ? protocol : Object.keys(protocols)[0])
     });
     this.setState({stage: Stage.Connecting});
   }
