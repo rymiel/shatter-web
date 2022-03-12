@@ -116,10 +116,6 @@ export default class App extends Component<Record<string, never>, AppState> {
         }
       } else if (json.emulate === "PlayInfo") {
         const data = proxiedData as Incoming.EmulatePlayInfoBody;
-        console.log(data.type);
-        data.actions.forEach(i => {
-          console.log(`${i[0]}: ${JSON.stringify(i[1])}`);
-        });
         this.setState(s => {
           const players = s.players;
           data.actions.forEach(i => {
