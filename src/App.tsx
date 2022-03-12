@@ -15,7 +15,7 @@ import Spinner from './Util/Spinner';
 import PlayerList from './PlayerList';
 
 export const enum Stage {
-  Loading, Authenticating, Joining, Connecting, Playing, Stuck
+  Loading, Authenticating, Joining, Connecting, Playing, Stuck, Disconnected
 }
 
 interface AppState {
@@ -81,6 +81,10 @@ export default class App extends Component<Record<string, never>, AppState> {
     return this.state.stage === Stage.Joining || this.state.stage === Stage.Connecting;
   }
 
+  isShowingChat() {
+    return this.state.stage === Stage.Playing || this.state.stage === Stage.Disconnected;
+  }
+
   send(frame: Outgoing.Frame) {
     this.state.ws?.send(JSON.stringify(frame));
   }
@@ -135,6 +139,7 @@ export default class App extends Component<Record<string, never>, AppState> {
         const data = proxiedData as Incoming.EmulateDisconnectBody;
         const message = data.html as string;
         this.setState(s => ({
+          stage: Stage.Disconnected,
           errors: [...s.errors, {
             name: "ForcedDisconnect",
             title: "Forced Disconnect",
@@ -216,7 +221,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers} />}
       {this.isShowingConnect() && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
-      {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
+      {this.isShowingChat() && <ChatBox app={this} chatLines={this.state.chatLines} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
     </>;
   }
