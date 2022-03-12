@@ -58,4 +58,34 @@ export namespace Incoming {
   export interface EmulateDisconnectBody {
     html: string;
   }
+
+  export namespace PlayInfo {
+    export type Action = "A" | "G" | "P" | "D" | "R"
+    export interface Player {
+      gamemode: string;
+      name: string;
+      display_name: string;
+      ping: string;
+      props: Properties;
+    }
+    export interface Properties {
+      textures: [string, string];
+    }
+    export interface Texture {
+      timestamp: number;
+      profileId: string;
+      profileName: string;
+      signatureRequired: boolean;
+      textures: Record<"SKIN", TexturePayload>;
+    }
+    export interface TexturePayload {
+      url: string;
+      metadata?: { model?: string };
+    }
+  }
+
+  export interface EmulatePlayInfoBody {
+    type: PlayInfo.Action;
+    actions: [string, Partial<PlayInfo.Player>][];
+  }
 }

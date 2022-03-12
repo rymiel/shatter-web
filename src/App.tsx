@@ -12,6 +12,7 @@ import ServerList, { ListedServerProps, srv } from './ServerList';
 import DebugBox from './SU/DebugBox';
 import ErrorC, { ErrorProps } from './Util/Error';
 import Spinner from './Util/Spinner';
+import PlayerList from './PlayerList';
 
 export const enum Stage {
   Loading, Authenticating, Joining, Connecting, Playing, Stuck
@@ -25,6 +26,7 @@ interface AppState {
   connections: ListedConnection[];
   knownUsers: (KnownUser & UserServerList)[];
   servers: Map<string, ListedServerProps>;
+  players: Map<string, Partial<Incoming.PlayInfo.Player>>;
   ws?: WebSocket;
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
@@ -49,6 +51,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       connections: [],
       errors: [],
       knownUsers: [],
+      players: new Map(),
       servers: new Map(),
       stage: Stage.Loading,
     };
@@ -104,14 +107,36 @@ export default class App extends Component<Record<string, never>, AppState> {
         this.setState({loadingState: logMsg});
       }
     } else if ("emulate" in json) {
-      const data = json.proxy;
+      const proxiedData = json.proxy;
       if (json.emulate === "Chat") {
-        const chat = data as Incoming.EmulateChatBody;
-        if (chat.position !== 2) {
-          const chatLine = chat.html.replace(/\n/, "<br/>");
+        const data = proxiedData as Incoming.EmulateChatBody;
+        if (data.position !== 2) {
+          const chatLine = data.html.replace(/\n/, "<br/>");
           this.setState(s => ({chatLines: [...s.chatLines, chatLine]}));
         }
+      } else if (json.emulate === "PlayInfo") {
+        const data = proxiedData as Incoming.EmulatePlayInfoBody;
+        console.log(data.type);
+        data.actions.forEach(i => {
+          console.log(`${i[0]}: ${JSON.stringify(i[1])}`);
+        });
+        this.setState(s => {
+          const players = s.players;
+          data.actions.forEach(i => {
+            if (data.type === "A") {
+              players.set(i[0], i[1]);
+            } else if (data.type === "R") {
+              players.delete(i[0]);
+            } else {
+              const existing = players.get(i[0]) ?? {};
+              players.set(i[0], {...existing, ...i[1]});
+            }
+          });
+          console.log(players);
+          return {players};
+        });
       } else if (json.emulate === "Disconnect") {
+        const data = proxiedData as Incoming.EmulateDisconnectBody;
         const message = data.html as string;
         this.setState(s => ({
           errors: [...s.errors, {
@@ -122,7 +147,7 @@ export default class App extends Component<Record<string, never>, AppState> {
         }));
       } else {
         console.log(`Unhandled proxy ${json.emulate}`);
-        console.log(data);
+        console.log(proxiedData);
       }
     } else if ("ready" in json) {
       let frame = json.ready as Incoming.ReadyFrame;
@@ -194,6 +219,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       {this.isShowingConnect() && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
       {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers} />}
       {this.isShowingConnect() && <ConnectForm app={this} />}
+      {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
     </>;

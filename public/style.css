@@ -16,6 +16,7 @@ input { font-size: 1rem; }
 blink { animation: 500ms linear alternate infinite condemned_blink_effect; }
 #chatInput { flex: 1; }
 #chatBox p { margin: 0; }
+#playerListBox p { margin-bottom: 2px; }
 h1 { font-size: 2.2rem; }
 h2 { font-size: 1.8rem; }
 h1, h2, h3, .err {
@@ -37,6 +38,13 @@ h1, h2, h3, .err {
   height: 60vh;
   overflow: scroll;
 }
+#playerListBox {
+  margin-left: 1em;
+  margin-right: 1em;
+  max-height: 20vh;
+  flex-direction: column;
+  overflow: scroll;
+}
 #controlBox {
   bottom: 0;
   left: 0;
@@ -49,6 +57,9 @@ h1, h2, h3, .err {
 @media (max-width: 800px) {
   #chatBox {
     height: 75vh;
+  }
+  #playerListBox {
+    max-height: 15vh; /* TODO: turn into a dropdown-like thing */
   }
 }
 #spinner {
@@ -72,6 +83,7 @@ h1, h2, h3, .err {
 .sp { margin-bottom: 1em; }
 .spr { margin-right: 1em; }
 .spl { margin-left: 1em; }
+.atl { margin-left: auto; }
 .inline-flex { display: inline-flex; }
 .vmid { vertical-align: middle; }
 .server-list { height: 64px; }

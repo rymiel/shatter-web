@@ -39,7 +39,6 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
     this.handleKey = this.handleKey.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
     this.sendChat = this.sendChat.bind(this);
-
   }
 
   sendChat() {
