@@ -2,11 +2,12 @@ import { RefObject, Component, createRef, useEffect } from 'react';
 
 import { Button, Intent } from '@blueprintjs/core';
 
-import App from './App';
+import { Outgoing } from './Frame/Outgoing';
 
 interface ChatBoxProps {
-  app: App;
+  sendFrame(frame: Outgoing.Frame): void;
   chatLines: string[];
+  minimal: boolean;
 }
 
 interface ChatBoxState {
@@ -44,7 +45,7 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
   sendChat() {
     const message = this.state.message.trim();
     if (message.length > 0) {
-      this.props.app.send({
+      this.props.sendFrame({
         emulate: "Chat",
         proxy: {chat: message}
       });
@@ -70,12 +71,12 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
 
   render() {
     return <div id="controlBox">
-      <div id="chatBox" onScroll={this.handleScroll} ref={this.ref}>
+      <div id="chatBox" onScroll={this.handleScroll} ref={this.ref} className={this.props.minimal ? "minimal" : undefined}>
         <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} />
       </div>
       <div id="chatLine">
-        <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} />
-        <Button intent={Intent.PRIMARY} text="Chat" onClick={this.sendChat} />
+        <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} disabled={this.props.minimal} />
+        <Button intent={Intent.PRIMARY} text="Chat" onClick={this.sendChat} disabled={this.props.minimal} />
       </div>
     </div>;
   }

@@ -38,6 +38,9 @@ h1, h2, h3, .err {
   height: 60vh;
   overflow: scroll;
 }
+#chatBox.minimal {
+  height: 40vh;
+}
 #playerListBox {
   margin-left: 1em;
   margin-right: 1em;
@@ -55,9 +58,8 @@ h1, h2, h3, .err {
   background-color: black;
 }
 @media (max-width: 800px) {
-  #chatBox {
-    height: 75vh;
-  }
+  #chatBox { height: 75vh; }
+  #chatBox.minimal { height: 45vh; }
   #playerListBox {
     max-height: 15vh; /* TODO: turn into a dropdown-like thing */
   }

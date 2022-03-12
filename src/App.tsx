@@ -221,7 +221,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers} />}
       {this.isShowingConnect() && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
-      {this.isShowingChat() && <ChatBox app={this} chatLines={this.state.chatLines} />}
+      {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} minimal={this.state.stage === Stage.Disconnected} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
     </>;
   }
