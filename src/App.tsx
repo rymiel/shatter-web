@@ -1,6 +1,6 @@
 import { CSSProperties, Component } from 'react';
 
-import { H1 } from "@blueprintjs/core";
+import { Button, H1, Intent } from "@blueprintjs/core";
 
 import Auth from './Auth';
 import ChatBox from './ChatBox';
@@ -215,7 +215,7 @@ export default class App extends Component<Record<string, never>, AppState> {
 
   render() {
     return <>
-      <H1>Shatter Web</H1>
+      <H1 title={process.env.SHATTER_VERSION}>Shatter Web</H1>
       {this.state.errors.map((p, i) => <ErrorC key={i} {...p} />)}
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}

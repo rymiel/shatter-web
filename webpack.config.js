@@ -3,6 +3,16 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
+const versionNumber = require('child_process')
+  .execSync('shards version')
+  .toString()
+  .trim();
+
+const commitHash = require('child_process')
+  .execSync('git rev-parse --short HEAD')
+  .toString()
+  .trim();
+
 const config = {
   entry: path.join(__dirname, 'src', 'index.tsx'),
   target: 'web',
@@ -28,7 +38,10 @@ const config = {
           template: path.join(__dirname, 'src', 'index.html'),
           filename: path.join(__dirname, 'public', 'index.html')
       }),
-      new webpack.EnvironmentPlugin({'HOT_REDIRECT': null})
+      new webpack.EnvironmentPlugin({
+        'HOT_REDIRECT': null,
+        'SHATTER_VERSION': `${versionNumber}-${commitHash}`
+      })
   ]
 };
 

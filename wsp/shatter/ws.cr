@@ -8,6 +8,7 @@ require "cache"
 
 module Shatter
   class WS
+    VERSION = "#{{{ `shards version #{__DIR__}`.chomp.stringify }}}-#{{{ `git rev-parse --short HEAD`.chomp.stringify }}}"
     module Frame
       alias RefreshAuth = {token: String?, rtoken: UUID?}
       alias Auth = {token: String}
