@@ -20,9 +20,13 @@ export namespace Outgoing {
     proxy: { chat: string };
   }
 
+  interface EmulateDisconnectFrame {
+    emulate: "Disconnect";
+  }
+
   interface SuActionFrame {
     su: "list" | "knownu";
   }
 
-  export type Frame = ConnectFrame | TokenFrame | RefreshTokenFrame | EmulateChatFrame | SuActionFrame;
+  export type Frame = ConnectFrame | TokenFrame | RefreshTokenFrame | EmulateChatFrame | EmulateDisconnectFrame | SuActionFrame;
 }

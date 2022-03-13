@@ -91,6 +91,8 @@ export default class App extends Component<Record<string, never>, AppState> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   decodeFrame(json: any) {
+    if (json === null) return;
+    if (json === undefined) return;
     if ("error" in json) {
       if (json.errno === "ExpiredToken") location.reload();
       this.setState(s => ({
@@ -218,11 +220,17 @@ export default class App extends Component<Record<string, never>, AppState> {
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}
       {this.isShowingConnect() && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
-      {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers} />}
-      {this.isShowingConnect() && <ConnectForm app={this} />}
+      {this.isShowingConnect() && <>
+        <ServerList app={this} servers={this.state.servers} />
+        <ConnectForm app={this} />
+      </>}
       {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
       {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} minimal={this.state.stage === Stage.Disconnected} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
+      <div style={{position: "absolute", "top": 0, "right": 0}}>
+        {this.state.stage === Stage.Playing && <Button text="Disconnect" intent={Intent.DANGER} onClick={() => this.send({emulate: "Disconnect"})} />}
+        {this.state.stage === Stage.Disconnected && <Button text="Back to server list" intent={Intent.WARNING} onClick={() => location.reload()} />}
+      </div>
     </>;
   }
 }

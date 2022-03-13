@@ -180,6 +180,9 @@ module Shatter
                 structure = ChatProxy::SbStructure.from_json json["proxy"].to_json
                 local_log "Proxy chat: #{structure}"
                 con.packet(Packet::Sb::Play::Chat) { |pkt| ChatProxy.convert_sb structure, pkt }
+              when "Disconnect"
+                logged_send({"errortype" => "Disconnected", "error" => WSPError.message(WSPError::ManualDisconnect), "errno" => WSPError::ManualDisconnect.to_s})
+                @ws.close
               else raise "Unknown proxy capability"
               end
             end
