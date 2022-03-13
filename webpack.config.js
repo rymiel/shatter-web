@@ -2,13 +2,20 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const childProcess = require('child_process')
+const fs = require('fs');
 
-const versionNumber = require('child_process')
-  .execSync('shards version')
-  .toString()
-  .trim();
+let versionNumber;
+if (fs.existsSync(".version")) {
+  versionNumber = fs.readFileSync('.version').toString().trim();
+} else {
+  versionNumber = childProcess
+    .execSync('shards version')
+    .toString()
+    .trim();
+}
 
-const commitHash = require('child_process')
+const commitHash = childProcess
   .execSync('git rev-parse --short HEAD')
   .toString()
   .trim();

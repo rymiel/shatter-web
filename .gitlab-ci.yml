@@ -29,6 +29,14 @@ stages: [deps, lint, build, deploy]
     - crystal -v
     - shards --version
 
+js prepare version:
+  image: "crystallang/crystal:latest"
+  artifacts:
+    paths:
+      - .version
+  script:
+    - shards version > .version
+
 js npm:
   <<: *js
   stage: deps
@@ -53,6 +61,8 @@ js react build:
   stage: build
   needs:
     - js eslint
+  dependencies:
+    - js prepare version
   script:
     - npm run-script build -- --mode=production
   artifacts:
