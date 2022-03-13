@@ -96,6 +96,7 @@ export default class App extends Component<Record<string, never>, AppState> {
     if ("error" in json) {
       if (json.errno === "ExpiredToken") location.reload();
       this.setState(s => ({
+        stage: s.stage === Stage.Playing ? Stage.Disconnected : s.stage,
         errors: s.errors.concat({
           name: json.errno,
           description: json.error,
