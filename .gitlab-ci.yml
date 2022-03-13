@@ -31,6 +31,8 @@ stages: [deps, lint, build, deploy]
 
 js prepare version:
   image: "crystallang/crystal:latest"
+  stage: deps
+  needs: []
   artifacts:
     paths:
       - .version
@@ -61,6 +63,7 @@ js react build:
   stage: build
   needs:
     - js eslint
+    - js prepare version
   dependencies:
     - js prepare version
   script:
