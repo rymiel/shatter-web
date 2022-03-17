@@ -58,8 +58,8 @@ export default class App extends Component<Record<string, never>, AppState> {
 
     if (this.canAuth()) {
       let ws;
-      if (process.env.HOT_REDIRECT) {
-        ws = new WebSocket(`ws://${process.env.HOT_REDIRECT}/wsp`);
+      if (process.env.WS_HOST) {
+        ws = new WebSocket(`${process.env.WS_HOST}`);
       } else {
         ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
       }

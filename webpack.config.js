@@ -45,7 +45,7 @@ const config = {
           filename: path.join(__dirname, 'public', 'index.html')
       }),
       new webpack.EnvironmentPlugin({
-        'HOT_REDIRECT': null,
+        'WS_HOST': null,
         'SHATTER_VERSION': `${versionNumber}-${commitHash}`
       })
   ]
