@@ -37,8 +37,7 @@ const config = {
   },
   output: {
     filename: '[name]-[contenthash].bundle.js',
-    path: path.resolve(__dirname, 'public', 'dist'),
-    publicPath: '/dist/'
+    path: path.resolve(__dirname, 'public'),
   },
   plugins: [
       new HtmlWebpackPlugin({
