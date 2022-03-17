@@ -95,7 +95,22 @@ crystal build release:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-deploy:
+pages:
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - js react build
+  dependencies:
+    - js react build
+  script:
+    - echo nothing to do
+  artifacts:
+    paths:
+      - public
+
+deploy backend:
   image: ubuntu
   stage: deploy
   only:
