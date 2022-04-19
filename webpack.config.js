@@ -24,30 +24,41 @@ const config = {
   entry: path.join(__dirname, 'src', 'index.tsx'),
   target: 'web',
   module: {
+    noParse: /bedrock/,
     rules: [
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-      }
+      },
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      zlib: require.resolve("browserify-zlib"),
+      stream: require.resolve("stream-browserify"),
+      buffer: require.resolve('buffer/'),
+      events: require.resolve('events/'),
+      assert: require.resolve('assert/'),
+    }
   },
   output: {
     filename: '[name]-[contenthash].bundle.js',
     path: path.resolve(__dirname, 'public'),
   },
   plugins: [
-      new HtmlWebpackPlugin({
-          template: path.join(__dirname, 'src', 'index.html'),
-          filename: path.join(__dirname, 'public', 'index.html')
-      }),
-      new webpack.EnvironmentPlugin({
-        'WS_HOST': null,
-        'SHATTER_VERSION': `${versionNumber}-${commitHash}`
-      })
+    new HtmlWebpackPlugin({
+        template: path.join(__dirname, 'src', 'index.html'),
+        filename: path.join(__dirname, 'public', 'index.html')
+    }),
+    new webpack.EnvironmentPlugin({
+      'WS_HOST': null,
+      'SHATTER_VERSION': `${versionNumber}-${commitHash}`
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser'
+    }),
   ]
 };
 

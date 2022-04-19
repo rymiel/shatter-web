@@ -13,6 +13,7 @@ import DebugBox from './SU/DebugBox';
 import ErrorC, { ErrorProps } from './Util/Error';
 import Spinner from './Util/Spinner';
 import PlayerList from './PlayerList';
+import { ChatMessage } from 'prismarine-chat';
 
 export const enum Stage {
   Loading, Authenticating, Joining, Connecting, Playing, Stuck, Disconnected
@@ -31,6 +32,8 @@ interface AppState {
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
   protocols?: Record<string, number>;
+  chatMessage?: typeof ChatMessage;
+  chatMessageLoaderPromise: Promise<(version: string) => typeof ChatMessage>;
 }
 
 const WELCOME_STYLE: CSSProperties = {
@@ -54,6 +57,7 @@ export default class App extends Component<Record<string, never>, AppState> {
       players: new Map(),
       servers: new Map(),
       stage: Stage.Loading,
+      chatMessageLoaderPromise: import("prismarine-chat").then(({ default: loader }) => loader),
     };
 
     if (this.canAuth()) {
@@ -141,13 +145,12 @@ export default class App extends Component<Record<string, never>, AppState> {
         });
       } else if (json.emulate === "Disconnect") {
         const data = proxiedData as Incoming.EmulateDisconnectBody;
-        const message = data.html as string;
         this.setState(s => ({
           stage: Stage.Disconnected,
           errors: [...s.errors, {
             name: "ForcedDisconnect",
             title: "Forced Disconnect",
-            description: (<span dangerouslySetInnerHTML={{__html: message}} />)
+            description: (<span>{ this.renderChat(data.message) }</span>)
           }]
         }));
       } else {
@@ -213,6 +216,14 @@ export default class App extends Component<Record<string, never>, AppState> {
       protocol: ((protocol in protocols) ? protocol : Object.keys(protocols)[0])
     });
     this.setState({stage: Stage.Connecting});
+    this.state.chatMessageLoaderPromise.then(loader => this.setState({chatMessage: loader(protocol)}));
+  }
+
+  renderChat(msg: string): string {
+    const obj = new this.state.chatMessage!(JSON.parse(msg));
+    console.log(msg);
+    console.log(obj);
+    return obj.toString();
   }
 
   render() {
@@ -227,7 +238,7 @@ export default class App extends Component<Record<string, never>, AppState> {
         <ConnectForm app={this} />
       </>}
       {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
-      {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} minimal={this.state.stage === Stage.Disconnected} />}
+      {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} renderChatMessage={this.renderChat.bind(this)} minimal={this.state.stage === Stage.Disconnected} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
       <div style={{position: "absolute", "top": 0, "right": 0}}>
         {this.state.stage === Stage.Playing && <Button text="Disconnect" intent={Intent.DANGER} onClick={() => this.send({emulate: "Disconnect"})} />}

@@ -7,6 +7,7 @@ import { Outgoing } from './Frame/Outgoing';
 interface ChatBoxProps {
   sendFrame(frame: Outgoing.Frame): void;
   chatLines: string[];
+  renderChatMessage(message: string): string;
   minimal: boolean;
 }
 
@@ -15,7 +16,7 @@ interface ChatBoxState {
   isScrolledToBottom: boolean;
 }
 
-function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
+function ChatMessages(p: {chatLines: string[], renderChatMessage: (message: string) => string, isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
   useEffect(() => {
     const out = p.scrollRef.current;
     if (!out) return;
@@ -24,7 +25,7 @@ function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scro
 
   return <>
     {p.chatLines.map((i, j) =>
-      <p key={j} dangerouslySetInnerHTML={{__html: i}} />
+      <p key={j}>{ p.renderChatMessage(i) }</p>
     )}
   </>;
 }
@@ -72,7 +73,7 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
   render() {
     return <div id="controlBox">
       <div id="chatBox" onScroll={this.handleScroll} ref={this.ref} className={this.props.minimal ? "minimal" : undefined}>
-        <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} />
+        <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} renderChatMessage={this.props.renderChatMessage} />
       </div>
       <div id="chatLine">
         <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} disabled={this.props.minimal} />

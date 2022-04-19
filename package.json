@@ -9,7 +9,7 @@
     "wspDev": "WSP_PORT=\"10111\" crystal run lib/sentry/src/sentry_cli.cr",
     "dev": "concurrently \"npm run webpackDev\" \"npm run wspDev\"",
     "lint": "eslint --ext '.ts,.tsx' ./",
-    "build": "webpack"
+    "build": "webpack --mode production"
   },
   "author": "rymiel",
   "license": "GPL-3.0-or-later",
@@ -37,8 +37,14 @@
     "@fortawesome/free-brands-svg-icons": "^6.0.0-beta3",
     "@fortawesome/free-solid-svg-icons": "^6.0.0-beta3",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "assert": "^2.0.0",
     "base64-js": "^1.5.1",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "prismarine-chat": "^1.6.1",
+    "process": "^0.11.10",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "stream-browserify": "^3.0.0"
   }
 }
