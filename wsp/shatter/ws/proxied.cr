@@ -1,4 +1,5 @@
 require "uuid/json"
+require "shatter/packet/packets"
 
 module Shatter
   class WS
