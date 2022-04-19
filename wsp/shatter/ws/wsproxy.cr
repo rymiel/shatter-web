@@ -26,6 +26,17 @@ module Shatter
         @id = ws_handler.id
       end
 
+      def initialize(@protocol, @ip, @port, ws_handler)
+        @listening = Array(Packet::Cb::Play).new
+        @proxied = Array(Packet::Cb::Play).new
+        @registry = ws_handler.registries[0]
+        @block_states = ws_handler.registries[1]
+        @minecraft_token = ws_handler.mc_token
+        @profile = ws_handler.profile
+        @ws = ws_handler.ws
+        @id = ws_handler.id
+      end
+
       def initialize(@protocol, @ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied)
       end
 

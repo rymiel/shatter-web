@@ -6,13 +6,22 @@ require "jwt"
 require "uuid"
 require "cache"
 
+macro json_record(*a)
+  record {{*a}} do
+    include JSON::Serializable
+  end
+end
+
 module Shatter
   class WS
     VERSION = "#{{{ `shards version #{__DIR__}`.chomp.stringify }}}-#{{{ `git rev-parse --short HEAD`.chomp.stringify }}}"
+
     module Frame
-      alias RefreshAuth = {token: String?, rtoken: UUID?}
-      alias Auth = {token: String}
-      alias Connect = {host: String, port: Int32?, listening: Array(Packet::Cb::Play), proxied: Array(Packet::Cb::Play), protocol: String}
+      json_record RefreshAuth, token : String?, rtoken : UUID?
+      json_record Auth, token : String
+      json_record Connect, host : String, port : Int32?, listening : Array(Packet::Cb::Play), proxied : Array(Packet::Cb::Play), protocol : String
+      json_record Offer, offer : String
+      json_record Ready, name : String, id : String, r : UUID?, roles : Array(Bool), vers : Hash(String, UInt32)
     end
 
     class_getter active = [] of WS
@@ -58,7 +67,7 @@ module Shatter
 
           refreshed = false
           rframe = Frame::RefreshAuth.from_json raw_message
-          if (rtoken = rframe[:rtoken])
+          if rtoken = rframe.rtoken
             cached_token = @@mc_token_cache.read rtoken
             if cached_token
               @profile = Shatter::MSA.new.profile cached_token
@@ -67,14 +76,14 @@ module Shatter
             end
           end
 
-          if rframe[:token].nil?
+          if rframe.token.nil?
             if !refreshed
               logged_send error :expired_token
               @ws.close
               next
             end
           else
-            frame = {token: rframe[:token].not_nil!}
+            frame = Frame::Auth.new rframe.token.not_nil!
             begin
               @mc_token, @profile, shatter_token = wsp_auth frame unless refreshed
             rescue ex : Shatter::MSA::MojangAuthError::GameNotOwnedError
@@ -88,7 +97,7 @@ module Shatter
           if db_user.nil?
             local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
             logged_send error :not_whitelisted
-            logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"})
+            logged_send Frame::Offer.new "/rq/#{profile.name}/#{profile.id}"
             @ws.close
             next
           else
@@ -98,18 +107,16 @@ module Shatter
           end
           local_log "Auth as #{profile.name} successful: #{db_user.inspect}"
           servers = user.servers.to_a
-          logged_send({"ready" => {
-            "name"  => profile.name,
-            "id"    => profile.id,
-            "r"     => shatter_token,
-            "roles" => user.role_array.to_a,
-            "vers"  => Packet::Protocol::PROTOCOL_NAMES,
-          }})
-          logged_send({"servers" => servers.map { |s| [s.host, s.port] }})
+          logged_send({ready: Frame::Ready.new(
+            profile.name,
+            profile.id,
+            shatter_token,
+            user.role_array.to_a,
+            Packet::Protocol::PROTOCOL_NAMES
+          )})
+          logged_send({servers: servers.map { |s| [s.host, s.port] }})
           servers.each do |s|
-            temp_proxy = WSProxy.new(
-              0u32, s.host, s.port, ([] of Packet::Cb::Play), ([] of Packet::Cb::Play), self
-            )
+            temp_proxy = WSProxy.new(UInt32::MAX, s.host, s.port, self)
             temp_proxy.ping
           end
         else
@@ -154,7 +161,7 @@ module Shatter
             end
           elsif !@mc_token.nil? && @con.nil?
             frame = Frame::Connect.from_json raw_message
-            frame_server = "#{frame[:host]}:#{frame[:port]}"
+            frame_server = "#{frame.host}:#{frame.port}"
             allowed = user.servers.map { |i| "#{i.host}:#{i.port}" }
             allowed += user.allowed if user.roles.alter_list?
             unless user.roles.superuser? || allowed.includes? frame_server
@@ -164,11 +171,11 @@ module Shatter
               next
             end
             @con = WSProxy.new(
-              Packet::Protocol::PROTOCOL_NAMES[frame[:protocol]?]? || 0u32,
-              frame[:host],
-              frame[:port] || 25565,
-              frame[:listening],
-              frame[:proxied],
+              Packet::Protocol::PROTOCOL_NAMES[frame.protocol]? || 0u32,
+              frame.host,
+              frame.port || 25565,
+              frame.listening,
+              frame.proxied,
               self
             )
             con.run unless abort_connection
@@ -208,7 +215,7 @@ module Shatter
       remote_log "1/7: MSA"
       msa = Shatter::MSA.new
       remote_log "2/7: Token"
-      token = msa.code frame[:token]
+      token = msa.code frame.token
       @email = JWT.decode(token.id_token, verify: false, validate: false)[0]["email"].as_s
       remote_log "3/7: XBL"
       xbl = msa.xbl token
