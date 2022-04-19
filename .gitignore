@@ -7,8 +7,8 @@
 
 /node_modules
 # generated automatically
-/public/dist/
-/public/index.html
+/public/
+!/public/style.css
 
 # personalized, these will be generated in a better way later
 permits.json

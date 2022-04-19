@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpackDev": "HOT_REDIRECT=\"localhost:10111\" webpack-dev-server --mode=development --port 10110 --hot",
+    "webpackDev": "WS_HOST=\"ws://localhost:10111/wsp\" webpack-dev-server --mode=development --port 10110 --hot",
     "wspDev": "WSP_PORT=\"10111\" crystal run lib/sentry/src/sentry_cli.cr",
     "dev": "concurrently \"npm run webpackDev\" \"npm run wspDev\"",
     "lint": "eslint --ext '.ts,.tsx' ./",
