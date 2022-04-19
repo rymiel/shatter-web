@@ -1,4 +1,5 @@
-import { faCircleCheck, faBomb } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons/faCircleCheck';
+import { faBomb } from '@fortawesome/free-solid-svg-icons/faBomb';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { KnownUser } from "./Frame/Incoming";

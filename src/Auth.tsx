@@ -1,4 +1,4 @@
-import { faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { faMicrosoft } from '@fortawesome/free-brands-svg-icons/faMicrosoft';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SyntheticEvent } from 'react';
 
