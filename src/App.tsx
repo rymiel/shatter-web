@@ -118,17 +118,18 @@ export default class App extends Component<Record<string, never>, AppState> {
       if (json.emulate === "Chat") {
         const data = proxiedData as Incoming.EmulateChatBody;
         if (data.position !== 2) {
-          const chatLine = data.html.replace(/\n/, "<br/>");
+          const chatLine = data.message.replace(/\n/, "<br/>");
           this.setState(s => ({chatLines: [...s.chatLines, chatLine]}));
         }
       } else if (json.emulate === "PlayInfo") {
         const data = proxiedData as Incoming.EmulatePlayInfoBody;
+        const type = data.action_id;
         this.setState(s => {
           const players = s.players;
           data.actions.forEach(i => {
-            if (data.type === "A") {
+            if (type === Incoming.PlayInfo.Action.Add) {
               players.set(i[0], i[1]);
-            } else if (data.type === "R") {
+            } else if (type === Incoming.PlayInfo.Action.Remove) {
               players.delete(i[0]);
             } else {
               const existing = players.get(i[0]) ?? {};

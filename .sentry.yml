@@ -1,2 +1,2 @@
-build: 'crystal build --debug ./wsp/wsp.cr -o bin/shatter-wsp'
+build: 'crystal build --error-trace --debug ./wsp/wsp.cr -o bin/shatter-wsp'
 run: 'bin/shatter-wsp'

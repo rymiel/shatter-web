@@ -51,21 +51,28 @@ export namespace Incoming {
   }
 
   export interface EmulateChatBody {
-    html: string;
+    message: string;
     position: number;
+    sender: string;
   }
 
   export interface EmulateDisconnectBody {
-    html: string;
+    message: string;
   }
 
   export namespace PlayInfo {
-    export type Action = "A" | "G" | "P" | "D" | "R"
+    export enum Action {
+      Add = 0,
+      GameMode = 1,
+      Ping = 2,
+      DisplayName = 3,
+      Remove = 4,
+    }
     export interface Player {
       gamemode: string;
       name: string;
       display_name: string;
-      ping: string;
+      ping: number;
       props: Properties;
     }
     export interface Properties {
@@ -85,7 +92,7 @@ export namespace Incoming {
   }
 
   export interface EmulatePlayInfoBody {
-    type: PlayInfo.Action;
+    action_id: PlayInfo.Action;
     actions: [string, Partial<PlayInfo.Player>][];
   }
 }
