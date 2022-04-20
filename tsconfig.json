@@ -1,4 +1,5 @@
 {
+    "exclude": ["node_modules", "public"],
     "compilerOptions": {
         "outDir": "./public/dist/",
         "noImplicitAny": true,
