@@ -87,7 +87,7 @@ crystal build release:
   stage: build
   needs: []
   script:
-    - shards build --production shatter-wsp --release
+    - shards build --production shatter-wsp --release -DSHATTER_IGNORE_FIELD_TRANSFORM
   artifacts:
     paths:
       - bin/shatter-wsp
