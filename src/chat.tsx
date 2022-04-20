@@ -97,6 +97,10 @@ function toHTMLInternal(payload: Chat.Message, translate?: Chat.TranslationProvi
     const legacyConverted = convertLegacy(text);
     if (Array.isArray(legacyConverted)) {
       text = <span>{legacyConverted.map((i, j) => toHTMLInternal(i, translate, j))}</span>;
+    } else {
+      // meh
+      const lines = text.split("\n").map((i, j) => <React.Fragment key={j}>{j > 0 && <br />}<span>{i}</span></React.Fragment>);
+      text = <span>{lines}</span>;
     }
   }
   if (payload.bold) text = <b>{text}</b>;

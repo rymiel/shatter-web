@@ -86,9 +86,8 @@ module Shatter
           STDERR << connection_name if r.has_describe?
           r.describe
           @ws.send({
-            "ping"        => [@ip, @port],
-            "data"        => r.data,
-            "description" => Shatter::Chat::HtmlBuilder.new.read r.data["description"].as_h,
+            "ping" => [@ip, @port],
+            "data" => r.data,
           }.to_json) if r.is_a? Packet::Status::Response
           @ws.send({
             "joingame" => r.world,

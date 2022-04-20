@@ -11,7 +11,7 @@ export interface ServerListProps {
 export interface ListedServerProps {
   host: [string, number];
   favicon?: string;
-  description?: string;
+  description?: JSX.Element;
   defaultVersion?: string;
 }
 export interface InherentServerProps {
@@ -21,7 +21,7 @@ export interface InherentServerProps {
 }
 interface DetailedListedServerProps extends ListedServerProps {
   favicon: string;
-  description: string;
+  description: JSX.Element;
 }
 
 const LIST_STYLE: CSSProperties = {
@@ -71,7 +71,7 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
       src={props.favicon} />
     <div style={{...LIST_DESC_STYLE, display: "inline"}}>
       <span>{props.name}</span>
-      <div dangerouslySetInnerHTML={{__html: props.description}} />
+      <div>{props.description}</div>
     </div>
     <ConnectButton style={LIST_CONNECT_STYLE} {...props} protocols={Object.keys(props.app.state.protocols!)} defaultProtocol={props.defaultVersion} />
   </ServerSection>;

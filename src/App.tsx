@@ -173,7 +173,8 @@ export default class App extends Component<Record<string, never>, AppState> {
     } else if ("ping" in json) {
       const server = json.ping as [string, number];
       const favicon = json.data.favicon as string;
-      const description = (json.description as string).replace("\n", "<br/>");
+      // meh
+      const description = this.renderChat(JSON.stringify(json.data.description));
       const protocolVersion = json.data.version.protocol as number;
 
       this.setState(s => {
