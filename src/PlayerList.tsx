@@ -2,11 +2,13 @@ import App from "./App";
 import { Incoming } from "./Frame/Incoming";
 import { toByteArray } from "base64-js";
 import React, { useEffect, useRef } from "react";
+import { Chat } from "./chat";
 
 
 interface PlayerListProps {
   app: App;
   players: Map<string, Partial<Incoming.PlayInfo.Player>>;
+  renderChat : Chat.Renderer;
 }
 
 function HeadCanvas(props: {scale: number, texture: string} ) {
@@ -42,7 +44,7 @@ export default function PlayerList(p: PlayerListProps) {
   return <div className="inline-flex" id="playerListBox">
     {[...p.players].map(([k, v]) => <p title={k} key={k} className="inline-flex mb-column">
       <PlayerHead player={v} />
-      <span title={v.name} className="spl spr">{v.display_name !== undefined ? <span dangerouslySetInnerHTML={{__html: v.display_name}} /> : `${v.name}`}</span>
+      <span title={v.name} className="spl spr">{v.display_name !== undefined ? p.renderChat(v.display_name) : `${v.name}`}</span>
       <span className="atl">{`${v.ping}ms`}</span>
       </p>)}
   </div>;

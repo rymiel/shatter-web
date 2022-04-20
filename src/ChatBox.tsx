@@ -3,11 +3,12 @@ import { RefObject, Component, createRef, useEffect } from 'react';
 import { Button, Intent } from '@blueprintjs/core';
 
 import { Outgoing } from './Frame/Outgoing';
+import { Chat } from './chat';
 
 interface ChatBoxProps {
   sendFrame(frame: Outgoing.Frame): void;
   chatLines: string[];
-  renderChatMessage(message: string): string;
+  renderChat : Chat.Renderer;
   minimal: boolean;
 }
 
@@ -16,7 +17,7 @@ interface ChatBoxState {
   isScrolledToBottom: boolean;
 }
 
-function ChatMessages(p: {chatLines: string[], renderChatMessage: (message: string) => string, isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
+function ChatMessages(p: {chatLines: string[], renderChat : Chat.Renderer, isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
   useEffect(() => {
     const out = p.scrollRef.current;
     if (!out) return;
@@ -25,7 +26,7 @@ function ChatMessages(p: {chatLines: string[], renderChatMessage: (message: stri
 
   return <>
     {p.chatLines.map((i, j) =>
-      <p key={j}>{ p.renderChatMessage(i) }</p>
+      <p key={j}>{ p.renderChat(i) }</p>
     )}
   </>;
 }
@@ -73,7 +74,7 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
   render() {
     return <div id="controlBox">
       <div id="chatBox" onScroll={this.handleScroll} ref={this.ref} className={this.props.minimal ? "minimal" : undefined}>
-        <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} renderChatMessage={this.props.renderChatMessage} />
+        <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} renderChat={this.props.renderChat} />
       </div>
       <div id="chatLine">
         <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} disabled={this.props.minimal} />

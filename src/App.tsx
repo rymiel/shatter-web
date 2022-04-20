@@ -1,4 +1,4 @@
-import { CSSProperties, Component } from 'react';
+import { CSSProperties, Component, ReactElement } from 'react';
 
 import { Button, H1, Intent } from "@blueprintjs/core";
 
@@ -13,6 +13,7 @@ import DebugBox from './SU/DebugBox';
 import ErrorC, { ErrorProps } from './Util/Error';
 import Spinner from './Util/Spinner';
 import PlayerList from './PlayerList';
+import { Chat, toHTML } from './chat';
 
 export const enum Stage {
   Loading, Authenticating, Joining, Connecting, Playing, Stuck, Disconnected
@@ -214,9 +215,10 @@ export default class App extends Component<Record<string, never>, AppState> {
     this.setState({stage: Stage.Connecting});
   }
 
-  renderChat(msg: string): string {
-    const obj = JSON.parse(msg);
-    return JSON.stringify(obj);
+  renderChat(msg: string): ReactElement {
+    const obj = JSON.parse(msg) as Chat.Payload;
+    console.log(obj);
+    return toHTML(obj);
   }
 
   render() {
@@ -230,8 +232,8 @@ export default class App extends Component<Record<string, never>, AppState> {
         <ServerList app={this} servers={this.state.servers} />
         <ConnectForm app={this} />
       </>}
-      {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} />}
-      {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} renderChatMessage={this.renderChat.bind(this)} minimal={this.state.stage === Stage.Disconnected} />}
+      {this.state.stage === Stage.Playing && <PlayerList app={this} players={this.state.players} renderChat={this.renderChat.bind(this)} />}
+      {this.isShowingChat() && <ChatBox sendFrame={this.send.bind(this)} chatLines={this.state.chatLines} renderChat={this.renderChat.bind(this)} minimal={this.state.stage === Stage.Disconnected} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
       <div style={{position: "absolute", "top": 0, "right": 0}}>
         {this.state.stage === Stage.Playing && <Button text="Disconnect" intent={Intent.DANGER} onClick={() => this.send({emulate: "Disconnect"})} />}
