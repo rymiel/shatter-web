@@ -18,6 +18,7 @@ import { Chat, toHTML } from './chat';
 export const enum Stage {
   Loading, Authenticating, Joining, Connecting, Playing, Stuck, Disconnected
 }
+const LANG_SOURCE = "https://raw.githubusercontent.com/PrismarineJS/minecraft-data/f2fe836e5dd5826a8901bc952c755e6c7fd85eb8/data/pc/1.18/language.json";
 
 interface AppState {
   callback: URLSearchParams;
@@ -32,6 +33,7 @@ interface AppState {
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
   protocols?: Record<string, number>;
+  translations?: Record<string, string>;
 }
 
 const WELCOME_STYLE: CSSProperties = {
@@ -56,6 +58,8 @@ export default class App extends Component<Record<string, never>, AppState> {
       servers: new Map(),
       stage: Stage.Loading,
     };
+
+    fetch(LANG_SOURCE).then(r => r.json()).then(d => this.setState({translations: d}));
 
     if (this.canAuth()) {
       let ws;
@@ -137,7 +141,6 @@ export default class App extends Component<Record<string, never>, AppState> {
               players.set(i[0], {...existing, ...i[1]});
             }
           });
-          console.log(players);
           return {players};
         });
       } else if (json.emulate === "Disconnect") {
@@ -215,10 +218,10 @@ export default class App extends Component<Record<string, never>, AppState> {
     this.setState({stage: Stage.Connecting});
   }
 
+  // TODO: This might have poor performance as it re-renders every line every time a line is appended
   renderChat(msg: string): ReactElement {
     const obj = JSON.parse(msg) as Chat.Payload;
-    console.log(obj);
-    return toHTML(obj);
+    return toHTML(obj, (i => this.state.translations?.[i]));
   }
 
   render() {
