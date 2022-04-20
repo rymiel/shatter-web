@@ -8,8 +8,7 @@
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@blueprintjs/recommended"
+        "plugin:@typescript-eslint/recommended"
     ],
     "settings": {
         "react": {
@@ -27,8 +26,7 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint",
-        "@blueprintjs"
+        "@typescript-eslint"
     ],
     "rules": {
         "semi": "warn",
@@ -36,7 +34,6 @@
         "react/jsx-space-before-closing": "warn",
         "react/jsx-props-no-multi-spaces": "warn",
         "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@blueprintjs/html-components": "error"
+        "@typescript-eslint/no-non-null-assertion": "off"
     }
 }
