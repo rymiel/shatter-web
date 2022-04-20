@@ -53,8 +53,8 @@ shards:
     version: 0.3.2+git.commit.e448ce83486f99ef016c311e10ec0cac805cded3
 
   shatter:
-    path: /home/rymiel/src/shatter-crystal/
-    version: 0.1.4
+    git: https://gitlab.com/rymiel/shatter.git
+    version: 0.2.0+git.commit.3ff301cbaab9278a467279a21b0865ded313dc5f
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git
