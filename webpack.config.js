@@ -1,6 +1,8 @@
 /* eslint-disable */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const childProcess = require('child_process')
 const fs = require('fs');
@@ -30,6 +32,10 @@ const config = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
     ],
   },
   resolve: {
@@ -48,6 +54,8 @@ const config = {
       'WS_HOST': null,
       'SHATTER_VERSION': `${versionNumber}-${commitHash}`
     }),
+    new MiniCssExtractPlugin(),
+    new CleanWebpackPlugin(),
   ]
 };
 
